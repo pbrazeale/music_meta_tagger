@@ -11,7 +11,6 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, Type
 
 import pandas as pd
 import streamlit as st
-from streamlit.components.v1 import html as components_html
 from mutagen import File as MutagenFile
 from mutagen.asf import ASF
 from mutagen.flac import FLAC
@@ -568,28 +567,9 @@ def browse_for_audio_folder() -> None:
         st.session_state["folder_path"] = folder
 
 
-def expand_sidebar() -> None:
-    """Expand the sidebar when triggered from the main layout."""
-    components_html(
-        """
-        <script>
-        const doc = window.parent.document;
-        const ctrl = doc.querySelector('[data-testid="collapsedControl"]');
-        if (!ctrl) {
-            return;
-        }
-        const expanded = ctrl.getAttribute('aria-expanded');
-        if (expanded === 'false') {
-            ctrl.click();
-        }
-        </script>
-        """,
-        height=0,
-        width=0,
-    )
 
 def main() -> None:
-    st.set_page_config(page_title="Music Metadata Tagger", layout="wide")
+    st.set_page_config(page_title="Music Metadata Tagger", layout="wide", initial_sidebar_state="expanded")
     st.title("Music Metadata Tagger")
     st.caption(
         "Bulk-apply Windows-friendly metadata (Title, Rating, Artists, etc.) to every audio file in a folder."
@@ -610,11 +590,13 @@ def main() -> None:
             on_click=browse_for_audio_folder,
             use_container_width=True,
         )
-        st.text_input(
+        folder_input = st.text_input(
             "Audio folder",
-            key="folder_input",
+            value=st.session_state.get("folder_input", ""),
             placeholder="Choose or enter a folder path",
         )
+        if folder_input != st.session_state.get("folder_input"):
+            st.session_state["folder_input"] = folder_input
         st.checkbox("Include subfolders", key="include_subfolders")
         load_clicked = st.button("Load folder", use_container_width=True)
         if load_clicked:
@@ -635,8 +617,6 @@ def main() -> None:
 
     if not selected_folder:
         st.info("Use the Setup sidebar to choose an audio folder (the 'Select audio folder' button opens File Explorer) and click 'Load folder' when you're ready.")
-        if st.button("Open setup sidebar"):
-            expand_sidebar()
         return
 
     st.subheader("Folder overview")
