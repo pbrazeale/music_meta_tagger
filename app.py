@@ -11,6 +11,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, Type
 
 import pandas as pd
 import streamlit as st
+from streamlit.components.v1 import html as components_html
 from mutagen import File as MutagenFile
 from mutagen.asf import ASF
 from mutagen.flac import FLAC
@@ -540,6 +541,53 @@ def apply_metadata_to_files(paths: List[Path], updates: Dict[str, Any]) -> List[
     return results
 
 
+
+def browse_for_audio_folder() -> None:
+    """Open a native folder picker and persist the selection."""
+    try:
+        from tkinter import Tk, filedialog  # type: ignore
+    except Exception:
+        st.warning("Folder picker is not available in this environment.")
+        return
+
+    folder = ""
+    root = None
+    try:
+        root = Tk()
+        root.withdraw()
+        root.attributes("-topmost", True)
+        folder = filedialog.askdirectory()
+    except Exception as exc:
+        st.warning(f"Unable to open the folder picker: {exc}")
+    finally:
+        if root is not None:
+            root.destroy()
+
+    if folder:
+        st.session_state["folder_input"] = folder
+        st.session_state["folder_path"] = folder
+
+
+def expand_sidebar() -> None:
+    """Expand the sidebar when triggered from the main layout."""
+    components_html(
+        """
+        <script>
+        const doc = window.parent.document;
+        const ctrl = doc.querySelector('[data-testid="collapsedControl"]');
+        if (!ctrl) {
+            return;
+        }
+        const expanded = ctrl.getAttribute('aria-expanded');
+        if (expanded === 'false') {
+            ctrl.click();
+        }
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
+
 def main() -> None:
     st.set_page_config(page_title="Music Metadata Tagger", layout="wide")
     st.title("Music Metadata Tagger")
@@ -549,24 +597,30 @@ def main() -> None:
 
     if "folder_path" not in st.session_state:
         st.session_state["folder_path"] = ""
+    if "folder_input" not in st.session_state:
+        st.session_state["folder_input"] = st.session_state["folder_path"]
     if "include_subfolders" not in st.session_state:
         st.session_state["include_subfolders"] = True
 
     with st.sidebar:
         st.header("Setup")
-        st.markdown(
-            "- Supported extensions: " + SUPPORTED_EXTENSIONS + "\n"
-            "- Install dependencies: `pip install streamlit mutagen pandas`\n"
-            "- Run with: `streamlit run app.py`"
+        st.caption(f"Supported extensions: {SUPPORTED_EXTENSIONS}")
+        st.button(
+            "Select audio folder",
+            on_click=browse_for_audio_folder,
+            use_container_width=True,
         )
-        folder_input = st.text_input("Audio folder", st.session_state["folder_path"])
-        include_subfolders = st.checkbox(
-            "Include subfolders", value=st.session_state["include_subfolders"]
+        st.text_input(
+            "Audio folder",
+            key="folder_input",
+            placeholder="Choose or enter a folder path",
         )
-        load_clicked = st.button("Load folder")
+        st.checkbox("Include subfolders", key="include_subfolders")
+        load_clicked = st.button("Load folder", use_container_width=True)
         if load_clicked:
-            st.session_state["folder_path"] = folder_input.strip()
-            st.session_state["include_subfolders"] = include_subfolders
+            selected = st.session_state["folder_input"].strip()
+            st.session_state["folder_path"] = selected
+            st.session_state["folder_input"] = selected
 
     selected_folder = st.session_state["folder_path"].strip()
     include = st.session_state["include_subfolders"]
@@ -580,7 +634,9 @@ def main() -> None:
             st.error(f"Folder not found: {folder}")
 
     if not selected_folder:
-        st.info("Enter a folder path in the sidebar and click 'Load folder' to begin.")
+        st.info("Use the Setup sidebar to choose an audio folder (the 'Select audio folder' button opens File Explorer) and click 'Load folder' when you're ready.")
+        if st.button("Open setup sidebar"):
+            expand_sidebar()
         return
 
     st.subheader("Folder overview")
