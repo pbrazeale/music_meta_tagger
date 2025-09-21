@@ -1,10 +1,7 @@
 """Streamlit-based bulk metadata editor for audio files.
 
 Run with:
-    streamlit run app.py
-
-Dependencies:
-    pip install streamlit mutagen pandas
+    streamlit run app.pys
 """
 
 import re
