@@ -30,6 +30,7 @@ from mutagen.id3 import (
 )
 from mutagen.mp4 import MP4
 
+LOGO_PATH = Path(__file__).resolve().parent / "music_meta_tagger_logo_300.jpg"
 
 @dataclass
 class UpdateResult:
@@ -567,9 +568,23 @@ def browse_for_audio_folder() -> None:
         st.session_state["folder_path"] = folder
 
 
+def reset_bulk_metadata_inputs() -> None:
+    """Clear stored values for the bulk metadata form widgets."""
+    for field_config in FIELD_DEFS:
+        st.session_state.pop(f"field_{field_config['name']}", None)
+
+
 
 def main() -> None:
-    st.set_page_config(page_title="Music Metadata Tagger", layout="wide", initial_sidebar_state="expanded")
+    logo_src = str(LOGO_PATH) if LOGO_PATH.exists() else None
+    page_config: Dict[str, Any] = {
+        "page_title": "Music Metadata Tagger",
+        "layout": "wide",
+        "initial_sidebar_state": "expanded",
+    }
+    if logo_src:
+        page_config["page_icon"] = logo_src
+    st.set_page_config(**page_config)
     st.title("Music Metadata Tagger")
     st.caption(
         "Bulk-apply Windows-friendly metadata (Title, Rating, Artists, etc.) to every audio file in a folder."
@@ -581,8 +596,12 @@ def main() -> None:
         st.session_state["folder_input"] = st.session_state["folder_path"]
     if "include_subfolders" not in st.session_state:
         st.session_state["include_subfolders"] = True
+    if "bulk_form_folder" not in st.session_state:
+        st.session_state["bulk_form_folder"] = ""
 
     with st.sidebar:
+        if logo_src:
+            st.image(logo_src, use_column_width=True)
         st.header("Setup")
         st.caption(f"Supported extensions: {SUPPORTED_EXTENSIONS}")
         st.button(
@@ -606,11 +625,25 @@ def main() -> None:
     folder = Path(selected_folder) if selected_folder else None
 
     files: List[Path] = []
+    resolved_folder = ""
     if folder:
         if folder.is_dir():
             files = list_audio_files(folder, include)
+            try:
+                resolved_folder = str(folder.resolve())
+            except Exception:
+                resolved_folder = str(folder)
         else:
             st.error(f"Folder not found: {folder}")
+
+    previous_bulk_folder = st.session_state["bulk_form_folder"]
+    if resolved_folder:
+        if resolved_folder != previous_bulk_folder:
+            reset_bulk_metadata_inputs()
+            st.session_state["bulk_form_folder"] = resolved_folder
+    elif not selected_folder and previous_bulk_folder:
+        reset_bulk_metadata_inputs()
+        st.session_state["bulk_form_folder"] = ""
 
     if not selected_folder:
         st.info("Use the Setup sidebar to choose an audio folder (the 'Select audio folder' button opens File Explorer).")
