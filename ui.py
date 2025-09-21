@@ -23,7 +23,7 @@ def render_sidebar(
     """Render the persistent sidebar controls."""
     with st.sidebar:
         if logo_src:
-            st.image(logo_src, use_column_width=True)
+            st.image(logo_src, use_container_width=True)
         st.header("Setup")
         st.caption(f"Supported extensions: {supported_extensions}")
         st.button(
@@ -50,7 +50,9 @@ def render_folder_overview(folder: Optional[Path], files: List[Path]) -> None:
     """Summarize the folder contents in the main view."""
     st.subheader("Folder overview")
     if files:
-        st.write(f"Found **{len(files)}** audio files in `{folder}`.")
+        folder_label = str(folder) if folder else st.session_state.get("folder_path", "")
+        folder_display = folder_label.replace('\\', '\\\\')
+        st.write(f"Found **{len(files)}** audio files in `{folder_display}`.")
         if len(files) > 200:
             st.write("Preview limited to first 200 entries.")
         table = build_metadata_table(files)

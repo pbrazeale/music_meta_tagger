@@ -55,7 +55,16 @@ def main() -> None:
         show_empty_state()
         return
 
-    render_folder_overview(folder_path, files)
+    display_folder = None
+    if resolved_folder:
+        try:
+            display_folder = Path(resolved_folder)
+        except Exception:
+            display_folder = folder_path
+    else:
+        display_folder = folder_path
+
+    render_folder_overview(display_folder, files)
 
     apply_clicked, raw_inputs = render_bulk_metadata_form(files)
 
