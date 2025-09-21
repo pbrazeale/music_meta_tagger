@@ -590,19 +590,16 @@ def main() -> None:
             on_click=browse_for_audio_folder,
             use_container_width=True,
         )
-        folder_input = st.text_input(
+        st.text_input(
             "Audio folder",
-            value=st.session_state.get("folder_input", ""),
+            key="folder_input",
             placeholder="Choose or enter a folder path",
         )
-        if folder_input != st.session_state.get("folder_input"):
-            st.session_state["folder_input"] = folder_input
         st.checkbox("Include subfolders", key="include_subfolders")
-        load_clicked = st.button("Load folder", use_container_width=True)
-        if load_clicked:
-            selected = st.session_state["folder_input"].strip()
-            st.session_state["folder_path"] = selected
-            st.session_state["folder_input"] = selected
+
+    current_input = st.session_state.get("folder_input", "").strip()
+    if current_input != st.session_state.get("folder_path", ""):
+        st.session_state["folder_path"] = current_input
 
     selected_folder = st.session_state["folder_path"].strip()
     include = st.session_state["include_subfolders"]
@@ -616,7 +613,7 @@ def main() -> None:
             st.error(f"Folder not found: {folder}")
 
     if not selected_folder:
-        st.info("Use the Setup sidebar to choose an audio folder (the 'Select audio folder' button opens File Explorer) and click 'Load folder' when you're ready.")
+        st.info("Use the Setup sidebar to choose an audio folder (the 'Select audio folder' button opens File Explorer).")
         return
 
     st.subheader("Folder overview")
