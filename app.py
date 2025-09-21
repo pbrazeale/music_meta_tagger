@@ -601,7 +601,7 @@ def main() -> None:
 
     with st.sidebar:
         if logo_src:
-            st.image(logo_src, use_column_width=True)
+            st.image(logo_src, use_container_width=True)
         st.header("Setup")
         st.caption(f"Supported extensions: {SUPPORTED_EXTENSIONS}")
         st.button(
