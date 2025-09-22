@@ -103,5 +103,4 @@ See [LICENSE.txt](LICENSE.txt) for the MIT-style license.
 
 ## Credits
 
-- Logo design and concept by Philip Brazeale.
 - Built with [Streamlit](https://streamlit.io/) and [Mutagen](https://mutagen.readthedocs.io/).
