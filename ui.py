@@ -61,7 +61,7 @@ def render_folder_overview(folder: Optional[Path], files: List[Path]) -> None:
         st.warning("No supported audio files were found in the selected folder.")
 
 
-def render_bulk_metadata_form(files: List[Path]) -> Tuple[bool, Dict[str, Any]]:
+def render_bulk_metadata_form(files: List[Path]) -> tuple[bool, dict[str, Any]]:
     """Render the bulk metadata form and return the submission state and inputs."""
     raw_inputs: Dict[str, Any] = {}
     with st.form("bulk_metadata"):

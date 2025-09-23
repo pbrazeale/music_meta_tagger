@@ -13,7 +13,7 @@ from metadata_logic import list_audio_files, reset_bulk_metadata_inputs
 CACHE_KEY = "folder_cache"
 
 
-def _reset_folder_cache(include_subfolders: bool) -> Dict[str, Any]:
+def _reset_folder_cache(include_subfolders: bool) -> dict[str, Any]:
     cache = {
         "selected": "",
         "resolved": "",
@@ -24,7 +24,7 @@ def _reset_folder_cache(include_subfolders: bool) -> Dict[str, Any]:
     return cache
 
 
-def _get_folder_cache(include_subfolders: bool) -> Dict[str, Any]:
+def _get_folder_cache(include_subfolders: bool) -> dict[str, Any]:
     cache = st.session_state.get(CACHE_KEY)
     if not isinstance(cache, dict):
         return _reset_folder_cache(include_subfolders)
@@ -92,7 +92,7 @@ def browse_for_audio_folder() -> None:
         _reset_folder_cache(st.session_state.get("include_subfolders", True))
 
 
-def sync_folder_selection() -> Tuple[str, Optional[Path]]:
+def sync_folder_selection() -> tuple[str, Optional[Path]]:
     """Return the selected folder string and Path after syncing text input."""
     raw_input = st.session_state.get("folder_input", "")
     normalized_input = normalize_folder_input(raw_input)
@@ -104,7 +104,7 @@ def sync_folder_selection() -> Tuple[str, Optional[Path]]:
     return selected_folder, folder_path
 
 
-def load_folder_contents(folder: Optional[Path], include_subfolders: bool) -> Tuple[List[Path], str]:
+def load_folder_contents(folder: Optional[Path], include_subfolders: bool) -> tuple[List[Path], str]:
     """Load audio files for the folder and return their resolved path string."""
     cache = _get_folder_cache(include_subfolders)
     selected_folder = st.session_state.get("folder_path", "")
