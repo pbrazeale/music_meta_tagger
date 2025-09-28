@@ -104,3 +104,25 @@ See [LICENSE.txt](LICENSE.txt) for the MIT-style license.
 ## Credits
 
 - Built with [Streamlit](https://streamlit.io/) and [Mutagen](https://mutagen.readthedocs.io/).
+
+## How to Contribute
+
+- Ways to help
+
+  - Report bugs and suggest features (describe steps to reproduce and expected behavior).
+  - Improve docs and examples; add troubleshooting tips you discover.
+  - Add/adjust fields (e.g., composer, disc number) and validation rules.
+  - Implement or refine format handlers (MP3/MP4/FLAC/ASF) and edge‑case mappings.
+  - UI polish and accessibility improvements in the Streamlit layout.
+
+- Dev setup
+
+  - Fork and clone the repo, then:
+    - `python -m venv .venv`
+    - PowerShell: `. .venv\Scripts\Activate.ps1` (or `.venv/Scripts/activate`)
+    - `pip install -r requirements.txt`
+    - Run: `streamlit run app.py`
+
+- Open the PR
+  - Clear title + 1–2 paragraph summary (what changed; why it matters).
+  - Include screenshots/gifs for UI changes.
