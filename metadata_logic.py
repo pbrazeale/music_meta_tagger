@@ -181,7 +181,7 @@ FIELD_PARSERS: Dict[str, Any] = {
 }
 
 
-def collect_updates(raw_inputs: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+def collect_updates(raw_inputs: Dict[str, Any]) -> tuple[Dict[str, Any], list[str]]:
     updates: Dict[str, Any] = {}
     errors: List[str] = []
     for name, raw_value in raw_inputs.items():
@@ -385,7 +385,7 @@ class ASFTagHandler(BaseTagHandler):
             self.audio["WM/SharedUserRating"] = RATING_TO_ASF.get(int(value), 0)
 
 
-HANDLER_CLASSES: List[Type[BaseTagHandler]] = [
+HANDLER_CLASSES: list[Type[BaseTagHandler]] = [
     MP3TagHandler,
     MP4TagHandler,
     FLACTagHandler,
@@ -405,7 +405,7 @@ def get_handler_for_path(path: Path) -> Optional[BaseTagHandler]:
     return handler_cls(path)
 
 
-def list_audio_files(folder: Path, include_subfolders: bool) -> List[Path]:
+def list_audio_files(folder: Path, include_subfolders: bool) -> list[Path]:
     if include_subfolders:
         iterator = folder.rglob("*")
     else:
@@ -428,7 +428,7 @@ def join_values(values: Iterable[Any]) -> str:
     return str(values)
 
 
-def read_metadata_preview(path: Path) -> Dict[str, str]:
+def read_metadata_preview(path: Path) -> dict[str, str]:
     preview: Dict[str, str] = {
         "file": path.name,
         "title": "",
@@ -482,7 +482,7 @@ def build_metadata_table(paths: List[Path], limit: int = 200) -> pd.DataFrame:
     return df[["file", "title", "artists", "album", "year", "track", "genre", "path"]]
 
 
-def apply_metadata_to_files(paths: List[Path], updates: Dict[str, Any]) -> List[UpdateResult]:
+def apply_metadata_to_files(paths: List[Path], updates: dict[str, Any]) -> list[UpdateResult]:
     results: List[UpdateResult] = []
     total = len(paths)
     progress = st.progress(0.0) if total else None
